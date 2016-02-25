@@ -1,0 +1,257 @@
+Acoustic
+Acoustic Folk
+Acoustic General
+Acoustic Guitar
+Acoustic Piano
+Acoustic Rock
+Acoustic Vocals
+Cover Songs
+Folk
+Alternative
+Alt Power Pop
+Alternative General
+Avant Rock
+Brit Pop
+Cover Songs
+Dance-Punk
+Emo
+Experimental
+Goth
+Grunge
+Indie
+Nu Metal
+Other Alternative
+Pop Punk
+Post Punk
+Shoegaze
+Ska
+Blues
+Acoustic Blues
+Blues General
+Blues Rock
+Country Blues
+Cover Songs
+Electric Blues
+Jump Blues
+Straight Ahead Blues
+Classical
+Baroque
+Chamber Music
+Choral
+Classical General
+Contemporary
+Ensembles
+Medieval
+Opera
+Renaissance
+Symphonic
+Comedy
+Adult Comedy
+General Comedy
+On Stage
+Parody
+Political Humor
+Prank Calls
+Country
+Alternative Country
+Americana
+Bluegrass
+Cajun/Zydeco
+Christian Country
+Country and Western
+Country General
+Country Swing
+Country-Pop
+Country-Rock
+Cover Songs
+Honky-Tonk
+Rockabilly
+Traditional Country
+Electronic
+Acid
+Ambient
+Big Beat
+Breakbeat
+Dance
+Drum n Bass
+Dubstep
+EDM
+Electro
+Electronica
+Euro
+Experimental Sounds
+Games Soundtrack
+Happy Hardcore
+House
+IDM
+Indietronic
+Industrial
+Jungle
+Mellow
+Minimal
+Noise
+Techno
+Techno Hardcore
+Trance
+Tribal
+Trip Hop
+HipHop
+Alternative Hip Hop
+Bass Rap
+Battles/Disses
+Christian Rap
+Freestyle
+Grime
+Hardcore Rap
+Hip Hop - Asian
+Hip Hop - Dutch
+Hip Hop - German
+Hip Hop General
+Hyphy
+Nerdcore
+New School
+Old School
+Positive Vibes
+Spoken Word
+Instrumentals
+Beats General
+Classical
+Club Bangas
+Cover Songs
+Crunk
+Dance & Electronic
+Dirty South
+East Coast
+EDM Instrumental
+Electro-hop
+Film Music
+Funk
+Game & Soundtrack
+Gangsta
+Hardcore
+Hip Hop
+Instrumentals with Hooks
+Jazzy Beats
+Latin
+Miami Bass
+Mid West
+New School
+Old School
+Pop
+R&B
+Reggae Beats
+Reggaeton
+Rock
+Scratch
+Smooth
+Trap
+West Coast
+Jazz
+Acid Jazz
+Bebop
+Cover Songs
+Dixieland
+Free Jazz
+Jazz Fusion
+Jazz General
+Jazz Vocals
+Lounge
+Modern Jazz
+Nu Jazz
+Smooth Jazz
+Swing
+Latin
+Bossa Nova
+Cover Songs
+Cuban
+Flamenco
+General Latin
+Latin Jazz
+Mariachi
+Merengue
+Pop/Balada
+Reggaeton
+Salsa
+Samba
+Tango
+Metal
+Alternative Metal
+Cover Songs
+Death/Black Metal
+Doom Metal
+Goth Metal
+Heavy Metal
+Industrial Metal
+Metal Riffs and Licks
+Power Metal
+Progressive Metal
+Rap-Metal
+Thrash Metal
+Pop
+Adult Contemporary
+Beach
+Christmas/Seasonal
+Contemporary Christian
+Contemporary Gospel
+Cover Songs
+Euro Pop
+J-Pop
+Musical
+Pop General
+Pop Rock
+Power Pop
+Rock
+Christian Rock
+Classic Rock
+Cover Songs
+Folk Rock
+Garage Rock
+Goth Rock
+Guitar Rock
+Hard Rock
+Instrumental Rock
+Progressive Rock
+Psychedelic Rock
+Punk
+Riffs and Licks
+Rock En Espanol
+Rock General
+Rock n Roll
+Rock Unplugged
+Southern Rock
+Surf Rock
+Talk
+Audio Blog
+Fictional Stories
+Music Talk
+Poetry
+Politics
+Religious
+Sports
+Talk
+Urban
+Cover Songs
+Funk
+Funky R&B
+Gospel
+Neo-Soul
+R&B/Soul/Pop
+Smooth R&B
+Soul
+World
+Dancehall
+Dub
+Native American
+New Age
+Reggae
+Traditional African
+Traditional Arabic
+Traditional Asian
+Traditional Celtic
+Traditional European
+Traditional Hawaiian
+Traditional Indian
+Traditional Irish
+Traditional Spanish
+World Fusion
+World General
