@@ -6,7 +6,7 @@ import discogs_client  # https://github.com/discogs/discogs_client
 from lxml import html
 from requests import get
 
-import wptools  # https://github.com/siznax/wptools
+import wptools  # https://github.com/siznax/wptools updated for python 3
 
 # get info from wiki infobox (also open wiki page in default browser)
 # use songname and artist to get song info from discogs
@@ -147,19 +147,14 @@ def parse_discogs(title, album):
 
 
 def get_external_tags(title, browser=True, wiki_page="", time=False):
-    from functions import Timer
-
-    with Timer(time):
-        wiki_page, tags_dbpedia = dbpedia(title, wiki_page)  # 6 secs, 3 s
+    wiki_page, tags_dbpedia = dbpedia(title, wiki_page)  # 3 secs
 
     if wiki_page and browser:
         open_new_tab(wiki_page)
 
-    with Timer(time):
-        tags_wiki = parse_wiki(wiki_page.split("/")[-1])  # 3 secs
+    tags_wiki = parse_wiki(wiki_page.split("/")[-1])  # 3 secs
 
-    with Timer(time):
-        track_nums, tags_discogs = parse_discogs(tags_wiki[0], tags_wiki[1])  # 7 secs, 5 s
+    track_nums, tags_discogs = parse_discogs(tags_wiki[0], tags_wiki[1])  # 5 secs
 
     tags_wiki.insert(3, track_nums)
     tags_dbpedia.insert(3, track_nums)
