@@ -22,7 +22,8 @@ OTHER_TAGS = {"aART": "Album artist:", "\xa9wrt": "Composer:", "\xa9cmt": "Comme
               "sosn": "Show sort order:", "tvsh": "Show name:", "cpil": "Compilation:",
               "pgap": "Gapless album:", "pcst": "Podcast:", "disk": "Disc number, total:",
               "tmpo": "Tempo/BPM, 16 bit int:"}
-GENRES = open("genres.txt").read().splitlines()
+with open("genres.txt", "r") as f:
+    GENRES = f.read().splitlines()
 
 
 class CurrentInfo:
