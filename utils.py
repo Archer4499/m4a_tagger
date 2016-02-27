@@ -8,12 +8,11 @@ from requests import get
 
 import wptools  # https://github.com/siznax/wptools updated for python 3
 
-# get info from wiki infobox (also open wiki page in default browser)
-# use songname and artist to get song info from discogs
-# use album from wiki to get track info from discogs
-# allow choice between both
 
-discogs = discogs_client.Client('M4a_tagger/0.9', user_token="kbbWNbNREvGSEWWaPJRPQSmeLBuHQxvzGMuLJsQr")
+with open("token.txt", "r") as f:
+    # A text file containing only a user token from https://www.discogs.com/settings/developers
+    token = f.readline().strip()
+discogs = discogs_client.Client('M4a_tagger/0.9', user_token=token)
 
 
 def dbpedia(input_title, url=""):

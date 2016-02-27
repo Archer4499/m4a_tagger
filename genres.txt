@@ -1,257 +1,257 @@
+Acid
+Acid Jazz
 Acoustic
+Acoustic Blues
 Acoustic Folk
 Acoustic General
 Acoustic Guitar
 Acoustic Piano
 Acoustic Rock
 Acoustic Vocals
-Cover Songs
-Folk
-Alternative
+Adult Comedy
+Adult Contemporary
 Alt Power Pop
+Alternative
+Alternative Country
 Alternative General
+Alternative Hip Hop
+Alternative Metal
+Ambient
+Americana
+Audio Blog
 Avant Rock
-Brit Pop
-Cover Songs
-Dance-Punk
-Emo
-Experimental
-Goth
-Grunge
-Indie
-Nu Metal
-Other Alternative
-Pop Punk
-Post Punk
-Shoegaze
-Ska
+Baroque
+Bass Rap
+Battles/Disses
+Beach
+Beats General
+Bebop
+Big Beat
+Bluegrass
 Blues
-Acoustic Blues
 Blues General
 Blues Rock
-Country Blues
-Cover Songs
-Electric Blues
-Jump Blues
-Straight Ahead Blues
-Classical
-Baroque
+Bossa Nova
+Breakbeat
+Brit Pop
+Cajun/Zydeco
 Chamber Music
 Choral
-Classical General
-Contemporary
-Ensembles
-Medieval
-Opera
-Renaissance
-Symphonic
-Comedy
-Adult Comedy
-General Comedy
-On Stage
-Parody
-Political Humor
-Prank Calls
-Country
-Alternative Country
-Americana
-Bluegrass
-Cajun/Zydeco
 Christian Country
-Country and Western
+Christian Rap
+Christian Rock
+Christmas/Seasonal
+Classic Rock
+Classical
+Classical
+Classical General
+Club Bangas
+Comedy
+Contemporary
+Contemporary Christian
+Contemporary Gospel
+Country
+Country Blues
 Country General
 Country Swing
+Country and Western
 Country-Pop
 Country-Rock
 Cover Songs
-Honky-Tonk
-Rockabilly
-Traditional Country
-Electronic
-Acid
-Ambient
-Big Beat
-Breakbeat
+Cover Songs
+Cover Songs
+Cover Songs
+Cover Songs
+Cover Songs
+Cover Songs
+Cover Songs
+Cover Songs
+Cover Songs
+Cover Songs
+Crunk
+Cuban
 Dance
+Dance & Electronic
+Dance-Punk
+Dancehall
+Death/Black Metal
+Dirty South
+Dixieland
+Doom Metal
 Drum n Bass
+Dub
 Dubstep
 EDM
+EDM Instrumental
+East Coast
+Electric Blues
 Electro
+Electro-hop
+Electronic
 Electronica
+Emo
+Ensembles
 Euro
+Euro Pop
+Experimental
 Experimental Sounds
-Games Soundtrack
-Happy Hardcore
-House
-IDM
-Indietronic
-Industrial
-Jungle
-Mellow
-Minimal
-Noise
-Techno
-Techno Hardcore
-Trance
-Tribal
-Trip Hop
-HipHop
-Alternative Hip Hop
-Bass Rap
-Battles/Disses
-Christian Rap
+Fictional Stories
+Film Music
+Flamenco
+Folk
+Folk Rock
+Free Jazz
 Freestyle
+Funk
+Funk
+Funky R&B
+Game & Soundtrack
+Games Soundtrack
+Gangsta
+Garage Rock
+General Comedy
+General Latin
+Gospel
+Goth
+Goth Metal
+Goth Rock
 Grime
+Grunge
+Guitar Rock
+Happy Hardcore
+Hard Rock
+Hardcore
 Hardcore Rap
+Heavy Metal
+Hip Hop
 Hip Hop - Asian
 Hip Hop - Dutch
 Hip Hop - German
 Hip Hop General
+HipHop
+Honky-Tonk
+House
 Hyphy
-Nerdcore
-New School
-Old School
-Positive Vibes
-Spoken Word
+IDM
+Indie
+Indietronic
+Industrial
+Industrial Metal
+Instrumental Rock
 Instrumentals
-Beats General
-Classical
-Club Bangas
-Cover Songs
-Crunk
-Dance & Electronic
-Dirty South
-East Coast
-EDM Instrumental
-Electro-hop
-Film Music
-Funk
-Game & Soundtrack
-Gangsta
-Hardcore
-Hip Hop
 Instrumentals with Hooks
-Jazzy Beats
-Latin
-Miami Bass
-Mid West
-New School
-Old School
-Pop
-R&B
-Reggae Beats
-Reggaeton
-Rock
-Scratch
-Smooth
-Trap
-West Coast
+J-Pop
 Jazz
-Acid Jazz
-Bebop
-Cover Songs
-Dixieland
-Free Jazz
 Jazz Fusion
 Jazz General
 Jazz Vocals
-Lounge
-Modern Jazz
-Nu Jazz
-Smooth Jazz
-Swing
+Jazzy Beats
+Jump Blues
+Jungle
 Latin
-Bossa Nova
-Cover Songs
-Cuban
-Flamenco
-General Latin
+Latin
 Latin Jazz
+Lounge
 Mariachi
+Medieval
+Mellow
 Merengue
-Pop/Balada
-Reggaeton
-Salsa
-Samba
-Tango
 Metal
-Alternative Metal
-Cover Songs
-Death/Black Metal
-Doom Metal
-Goth Metal
-Heavy Metal
-Industrial Metal
 Metal Riffs and Licks
-Power Metal
-Progressive Metal
-Rap-Metal
-Thrash Metal
-Pop
-Adult Contemporary
-Beach
-Christmas/Seasonal
-Contemporary Christian
-Contemporary Gospel
-Cover Songs
-Euro Pop
-J-Pop
+Miami Bass
+Mid West
+Minimal
+Modern Jazz
+Music Talk
 Musical
+Native American
+Neo-Soul
+Nerdcore
+New Age
+New School
+New School
+Noise
+Nu Jazz
+Nu Metal
+Old School
+Old School
+On Stage
+Opera
+Other Alternative
+Parody
+Poetry
+Political Humor
+Politics
+Pop
+Pop
 Pop General
+Pop Punk
 Pop Rock
+Pop/Balada
+Positive Vibes
+Post Punk
+Power Metal
 Power Pop
-Rock
-Christian Rock
-Classic Rock
-Cover Songs
-Folk Rock
-Garage Rock
-Goth Rock
-Guitar Rock
-Hard Rock
-Instrumental Rock
+Prank Calls
+Progressive Metal
 Progressive Rock
 Psychedelic Rock
 Punk
+R&B
+R&B/Soul/Pop
+Rap-Metal
+Reggae
+Reggae Beats
+Reggaeton
+Reggaeton
+Religious
+Renaissance
 Riffs and Licks
+Rock
+Rock
 Rock En Espanol
 Rock General
-Rock n Roll
 Rock Unplugged
-Southern Rock
-Surf Rock
-Talk
-Audio Blog
-Fictional Stories
-Music Talk
-Poetry
-Politics
-Religious
-Sports
-Talk
-Urban
-Cover Songs
-Funk
-Funky R&B
-Gospel
-Neo-Soul
-R&B/Soul/Pop
+Rock n Roll
+Rockabilly
+Salsa
+Samba
+Scratch
+Shoegaze
+Ska
+Smooth
+Smooth Jazz
 Smooth R&B
 Soul
-World
-Dancehall
-Dub
-Native American
-New Age
-Reggae
+Southern Rock
+Spoken Word
+Sports
+Straight Ahead Blues
+Surf Rock
+Swing
+Symphonic
+Talk
+Talk
+Tango
+Techno
+Techno Hardcore
+Thrash Metal
 Traditional African
 Traditional Arabic
 Traditional Asian
 Traditional Celtic
+Traditional Country
 Traditional European
 Traditional Hawaiian
 Traditional Indian
 Traditional Irish
 Traditional Spanish
+Trance
+Trap
+Tribal
+Trip Hop
+Urban
+West Coast
+World
 World Fusion
 World General
