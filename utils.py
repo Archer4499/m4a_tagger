@@ -145,7 +145,7 @@ def parse_discogs(title, album):
     return tracks, tags
 
 
-def get_external_tags(title, browser=True, wiki_page="", time=False):
+def get_external_tags(title="", browser=True, wiki_page=""):
     wiki_page, tags_dbpedia = dbpedia(title, wiki_page)  # 3 secs
 
     if wiki_page and browser:
@@ -162,8 +162,7 @@ def get_external_tags(title, browser=True, wiki_page="", time=False):
 
 
 if __name__ == '__main__':
-    external_tags = get_external_tags("Crush", wiki_page="https://en.wikipedia.org/wiki/Only_You_(Yazoo_song)",
-                                      time=True)
+    external_tags = get_external_tags(title="Crush", wiki_page="http://en.wikipedia.org/wiki/Only_You_(Yazoo_song)")
     if external_tags:
         print(external_tags[0])
         print(external_tags[1])

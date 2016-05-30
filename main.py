@@ -84,7 +84,6 @@ class NewEntry:
             except ValueError:
                 self.bell()
                 return False
-
             return True
 
     def __init__(self, parent, column, select_var, name):
@@ -122,9 +121,9 @@ class NewEntry:
         select.grid(column=column, row=7)
 
 
-class MainMenu(Menu):
+class MenuBar(Menu):
     def __init__(self, close):
-        super(MainMenu, self).__init__()
+        super(MenuBar, self).__init__()
 
         self.option_add("*tearOff", FALSE)
 
@@ -144,11 +143,13 @@ class Gui(Tk):
         # TODO: add url entry
         # TODO: add progress bar and threads
         super(Gui, self).__init__()
+
         self.title("M4a Tagger")
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-        main_menu = MainMenu(self.quit)
-        self.config(menu=main_menu)
+
+        menu_bar = MenuBar(self.quit)
+        self.config(menu=menu_bar)
 
         self.songs = []
         self.total_songs = 0
@@ -157,8 +158,23 @@ class Gui(Tk):
 
         mainframe = ttk.Frame(self, padding=(3, 3, 0, 0))
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
+        # Clears focus from text boxes on click
         mainframe.bind("<1>", lambda event: mainframe.focus_set())
 
+        self.init_columns(mainframe)
+        self.init_extra(mainframe, 8)
+        self.init_custom_url(mainframe, 8)
+        self.init_buttons(mainframe)
+
+        # Add padding to most widgets
+        for child in mainframe.winfo_children():
+            if type(child) != ttk.Frame:
+                child.grid_configure(padx=5, pady=5)
+
+        ttk.Sizegrip(self).grid(column=999, row=999, sticky=(S, E))
+
+    def init_columns(self, mainframe):
+        # TODO: remove selfs
         # Row Labels
         for i, item in enumerate(TAGS):
             ttk.Label(mainframe, text=item[0]).grid(column=0, row=i + 1, sticky=E)
@@ -166,15 +182,7 @@ class Gui(Tk):
         self.current_info = CurrentInfo(mainframe, 1)
         mainframe.columnconfigure(1, weight=1, uniform="a")
 
-        # Extra tags
-        self.extra_tags_var = StringVar()
-        ttk.Label(mainframe, text="The following tags will be removed:") \
-            .grid(column=1, row=7, sticky=W)
-        self.extra_tags_frame = ttk.Frame(mainframe, padding=(5, 0), borderwidth=2, relief="sunken")
-        self.extra_tags_frame.grid(column=1, columnspan=2, row=8, sticky=(W, E), padx=5)
-        ttk.Label(self.extra_tags_frame, textvariable=self.extra_tags_var, font="TkFixedFont") \
-            .grid(column=0, row=0, sticky=(W, E))
-
+        ttk.Label(mainframe, text="Select tag source:").grid(column=1, row=7, sticky=E)
         self.entry_select = StringVar(value="Dbpedia:")
 
         self.dbpedia_entry = NewEntry(mainframe, 2, self.entry_select, "Dbpedia:")
@@ -187,65 +195,110 @@ class Gui(Tk):
         self.discogs_entry = NewEntry(mainframe, 4, self.entry_select, "Discogs:")
         mainframe.columnconfigure(4, weight=1, uniform="a")
 
-        # Buttons
+    def init_extra(self, mainframe, row_num):
+        self.extra_tags_var = StringVar()
+
+        ttk.Label(mainframe, text="The following tags will be removed:") \
+            .grid(column=1, columnspan=2, row=row_num, sticky=W)
+
+        self.extra_tags_frame = ttk.Frame(mainframe, padding=(5, 0), borderwidth=2, relief="sunken")
+        self.extra_tags_frame.grid(column=1, columnspan=2, row=row_num+1, sticky=(W, E), padx=5)
+
+        ttk.Label(self.extra_tags_frame, textvariable=self.extra_tags_var, font="TkFixedFont") \
+            .grid(column=0, row=0, sticky=(W, E))
+
+    def init_custom_url(self, mainframe, row_num):
+        self.custom_url = StringVar()
+
+        ttk.Label(mainframe, text="Enter wikipedia url if information is incorrect:") \
+            .grid(column=3, columnspan=2, row=row_num, sticky=W)
+
+        self.custom_url_frame = ttk.Frame(mainframe)
+        self.custom_url_frame.grid(column=3, columnspan=2, row=row_num+1, sticky=(W, E), padx=(5, 0))
+
+        ttk.Label(self.custom_url_frame, text="en.wikipedia.org/wiki/") \
+            .grid(column=0, row=0, sticky=W)
+
+        self.custom_url_entry = ttk.Entry(self.custom_url_frame, textvariable=self.custom_url)
+        self.custom_url_entry.grid(column=1, row=0, sticky=W)
+
+        self.custom_url_button = ttk.Button(self.custom_url_frame, text="Load Info", command=self.load_url)
+        self.custom_url_button.grid(column=2, row=0)
+        self.custom_url_button.state(["disabled"])
+
+    def init_buttons(self, mainframe):
         button_frame = ttk.Frame(mainframe, padding=(5, 10, 0, 0))
         button_frame.grid(column=2, columnspan=3, row=100, sticky=E)
-        #
+
         self.progress = StringVar(value="Song 0 of 0")
         ttk.Label(button_frame, textvariable=self.progress).grid(column=0, row=0)
-        #
+
         self.save_button = ttk.Button(button_frame, text="Save", command=self.save)
         self.save_button.grid(column=1, row=0)
         self.save_button.state(["disabled"])
-        #
+
         self.next_song_button = ttk.Button(button_frame, text="Next Song", command=self.next_song)
         self.next_song_button.grid(column=2, row=0)
         self.next_song_button.state(["disabled"])
-        #
+
         self.browse_button = ttk.Button(button_frame, text="Open Folder", command=self.browse)
         self.browse_button.grid(column=3, row=0)
 
-        for child in mainframe.winfo_children():
-            if type(child).__name__ != "Frame":
-                child.grid_configure(padx=5, pady=5)
+    @staticmethod
+    def set_var_list(var_list, tag_list):
+        for i, var in enumerate(var_list):
+            if i is 3:
+                var[0].set(tag_list[i][0])
+                if tag_list[i][1]:
+                    var[1].set(tag_list[i][1])
+                else:
+                    var[1].set("")
+            else:
+                var.set(tag_list[i])
 
-        ttk.Sizegrip(self).grid(column=999, row=999, sticky=(S, E))
+    def set_external_tags(self, title="", wiki_path=""):
+        if wiki_path:
+            wiki_path = "http://en.wikipedia.org/wiki/" + wiki_path
+
+        # Downloads tags from Dbpedia, Wikipedia and Discogs
+        external_tags = get_external_tags(title=title, wiki_page=wiki_path)
+        self.set_var_list(self.dbpedia_entry.var_list, external_tags[0])
+        self.set_var_list(self.wiki_entry.var_list, external_tags[1])
+        self.set_var_list(self.discogs_entry.var_list, external_tags[2])
 
     def set_vars(self):
+        def tag_name_value(tag_key):
+            tag = self.extra_tags[tag_key]
+            if type(tag) is list:
+                value = tag[0]
+            else:
+                value = tag
+
+            return OTHER_TAGS.get(tag_key, tag_key).ljust(24) + str(value)
+
         def get_extra_tags():
             if "covr" in self.extra_tags:
                 del self.extra_tags["covr"]
             if self.extra_tags:
-                # TODO: handle bools instead of just self.extra_tags[tag][0]
-                return "\n".join([OTHER_TAGS.get(tag, tag).ljust(24) + str(self.extra_tags[tag][0])
-                                  for tag in self.extra_tags])
+                return "\n".join([tag_name_value(tag_key) for tag_key in self.extra_tags])
             else:
                 return "None"
-
-        def set_var_list(var_list, tag_list):
-            for i, var in enumerate(var_list):
-                if i is 3:
-                    var[0].set(tag_list[i][0])
-                    if tag_list[i][1]:
-                        var[1].set(tag_list[i][1])
-                    else:
-                        var[1].set("")
-                else:
-                    var.set(tag_list[i])
 
         self.extra_tags = dict(self.current_song.tags)
         song_tags = [self.extra_tags.pop(tag[1], "None")[0] for tag in TAGS]
 
-        set_var_list(self.current_info.var_list, song_tags)
+        self.set_var_list(self.current_info.var_list, song_tags)
 
         self.extra_tags_var.set(get_extra_tags())
 
-        external_tags = get_external_tags(song_tags[0])
-        set_var_list(self.dbpedia_entry.var_list, external_tags[0])
-        set_var_list(self.wiki_entry.var_list, external_tags[1])
-        set_var_list(self.discogs_entry.var_list, external_tags[2])
+        self.set_external_tags(title=song_tags[0])
 
         self.progress.set(value="Song "+str(self.total_songs-len(self.songs))+" of "+str(self.total_songs))
+
+    def load_url(self):
+        url = self.custom_url.get()
+        if url:
+            self.set_external_tags(wiki_path=url)
 
     def open_next_song(self):
         while self.songs:
@@ -258,7 +311,6 @@ class Gui(Tk):
         return False
 
     def browse(self):
-
         directory = filedialog.askdirectory(parent=self, mustexist=True)
         if not directory:
             return
@@ -283,11 +335,11 @@ class Gui(Tk):
         self.set_vars()
 
         if self.songs:
+            self.custom_url_button.state(["!disabled"])
             self.next_song_button.state(["!disabled"])
             self.save_button.state(["!disabled"])
 
     def save(self):
-
         if self.extra_tags:
             for tag in self.extra_tags:
                 del self.current_song[tag]
