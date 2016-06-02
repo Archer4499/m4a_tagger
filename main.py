@@ -1,3 +1,5 @@
+import queue
+import threading
 from glob import glob
 from os import chdir
 from tkinter import *
@@ -140,8 +142,6 @@ class MenuBar(Menu):
 
 class Gui(Tk):
     def __init__(self):
-        # TODO: add url entry
-        # TODO: add progress bar and threads
         super(Gui, self).__init__()
 
         self.title("M4a Tagger")
@@ -162,8 +162,14 @@ class Gui(Tk):
         mainframe.bind("<1>", lambda event: mainframe.focus_set())
 
         self.init_columns(mainframe)
+
+        self.extra_tags_var = StringVar()
         self.init_extra(mainframe, 8)
+
+        self.custom_url = StringVar()
         self.init_custom_url(mainframe, 8)
+
+        self.progress = StringVar(value="Song 0 of 0")
         self.init_buttons(mainframe)
 
         # Add padding to most widgets
@@ -173,8 +179,9 @@ class Gui(Tk):
 
         ttk.Sizegrip(self).grid(column=999, row=999, sticky=(S, E))
 
+        self.load_queue = queue.Queue()
+
     def init_columns(self, mainframe):
-        # TODO: remove selfs
         # Row Labels
         for i, item in enumerate(TAGS):
             ttk.Label(mainframe, text=item[0]).grid(column=0, row=i + 1, sticky=E)
@@ -196,33 +203,29 @@ class Gui(Tk):
         mainframe.columnconfigure(4, weight=1, uniform="a")
 
     def init_extra(self, mainframe, row_num):
-        self.extra_tags_var = StringVar()
-
         ttk.Label(mainframe, text="The following tags will be removed:") \
             .grid(column=1, columnspan=2, row=row_num, sticky=W)
 
-        self.extra_tags_frame = ttk.Frame(mainframe, padding=(5, 0), borderwidth=2, relief="sunken")
-        self.extra_tags_frame.grid(column=1, columnspan=2, row=row_num+1, sticky=(W, E), padx=5)
+        extra_tags_frame = ttk.Frame(mainframe, padding=(5, 0), borderwidth=2, relief="sunken")
+        extra_tags_frame.grid(column=1, columnspan=2, row=row_num+1, sticky=(W, E), padx=5)
 
-        ttk.Label(self.extra_tags_frame, textvariable=self.extra_tags_var, font="TkFixedFont") \
+        ttk.Label(extra_tags_frame, textvariable=self.extra_tags_var, font="TkFixedFont") \
             .grid(column=0, row=0, sticky=(W, E))
 
     def init_custom_url(self, mainframe, row_num):
-        self.custom_url = StringVar()
-
         ttk.Label(mainframe, text="Enter wikipedia url if information is incorrect:") \
             .grid(column=3, columnspan=2, row=row_num, sticky=W)
 
-        self.custom_url_frame = ttk.Frame(mainframe)
-        self.custom_url_frame.grid(column=3, columnspan=2, row=row_num+1, sticky=(W, E), padx=(5, 0))
+        custom_url_frame = ttk.Frame(mainframe)
+        custom_url_frame.grid(column=3, columnspan=2, row=row_num+1, sticky=(W, E), padx=(5, 0))
 
-        ttk.Label(self.custom_url_frame, text="en.wikipedia.org/wiki/") \
+        ttk.Label(custom_url_frame, text="en.wikipedia.org/wiki/") \
             .grid(column=0, row=0, sticky=W)
 
-        self.custom_url_entry = ttk.Entry(self.custom_url_frame, textvariable=self.custom_url)
-        self.custom_url_entry.grid(column=1, row=0, sticky=W)
+        custom_url_entry = ttk.Entry(custom_url_frame, textvariable=self.custom_url)
+        custom_url_entry.grid(column=1, row=0, sticky=W)
 
-        self.custom_url_button = ttk.Button(self.custom_url_frame, text="Load Info", command=self.load_url)
+        self.custom_url_button = ttk.Button(custom_url_frame, text="Load Info", command=self.load_url)
         self.custom_url_button.grid(column=2, row=0)
         self.custom_url_button.state(["disabled"])
 
@@ -230,7 +233,6 @@ class Gui(Tk):
         button_frame = ttk.Frame(mainframe, padding=(5, 10, 0, 0))
         button_frame.grid(column=2, columnspan=3, row=100, sticky=E)
 
-        self.progress = StringVar(value="Song 0 of 0")
         ttk.Label(button_frame, textvariable=self.progress).grid(column=0, row=0)
 
         self.save_button = ttk.Button(button_frame, text="Save", command=self.save)
@@ -256,15 +258,33 @@ class Gui(Tk):
             else:
                 var.set(tag_list[i])
 
+    def threaded_set_external_tags(self, title, wiki_path):
+        self.load_queue.put(get_external_tags(title=title, wiki_page=wiki_path))
+
+    def process_load_queue(self):
+        try:
+            external_tags = self.load_queue.get_nowait()
+        except queue.Empty:
+            self.after(100, self.process_load_queue)
+        else:
+            self.set_var_list(self.dbpedia_entry.var_list, external_tags[0])
+            self.set_var_list(self.wiki_entry.var_list, external_tags[1])
+            self.set_var_list(self.discogs_entry.var_list, external_tags[2])
+            # TODO: stop loading icon
+            print("Finished loading")
+
     def set_external_tags(self, title="", wiki_path=""):
+        # TODO: auto load next song
+        # TODO: start loading icon
+        print("Started loading")
+
         if wiki_path:
             wiki_path = "http://en.wikipedia.org/wiki/" + wiki_path
 
         # Downloads tags from Dbpedia, Wikipedia and Discogs
-        external_tags = get_external_tags(title=title, wiki_page=wiki_path)
-        self.set_var_list(self.dbpedia_entry.var_list, external_tags[0])
-        self.set_var_list(self.wiki_entry.var_list, external_tags[1])
-        self.set_var_list(self.discogs_entry.var_list, external_tags[2])
+        threading.Thread(target=self.threaded_set_external_tags, args=(title, wiki_path)).start()
+
+        self.after(0, self.process_load_queue())
 
     def set_vars(self):
         def tag_name_value(tag_key):
@@ -291,11 +311,12 @@ class Gui(Tk):
 
         self.extra_tags_var.set(get_extra_tags())
 
-        self.set_external_tags(title=song_tags[0])
-
         self.progress.set(value="Song "+str(self.total_songs-len(self.songs))+" of "+str(self.total_songs))
 
+        self.set_external_tags(title=song_tags[0])
+
     def load_url(self):
+        # Bound to custom_url_button
         url = self.custom_url.get()
         if url:
             self.set_external_tags(wiki_path=url)
@@ -311,6 +332,7 @@ class Gui(Tk):
         return False
 
     def browse(self):
+        # Bound to browse_button
         directory = filedialog.askdirectory(parent=self, mustexist=True)
         if not directory:
             return
@@ -340,6 +362,7 @@ class Gui(Tk):
             self.save_button.state(["!disabled"])
 
     def save(self):
+        # Bound to save_button
         if self.extra_tags:
             for tag in self.extra_tags:
                 del self.current_song[tag]
@@ -366,6 +389,7 @@ class Gui(Tk):
             self.save_button.state(["disabled"])
 
     def next_song(self):
+        # Bound to next_song_button
         if not self.open_next_song():
             messagebox.showerror(title="Error", message="No more valid .m4a files in directory")
             self.next_song_button.state(["disabled"])
