@@ -145,7 +145,7 @@ def parse_discogs(title, album):
     return tracks, tags
 
 
-def get_external_tags(title="", browser=True, wiki_page=""):
+def get_external_tags(title="", wiki_page="", browser=True):
     wiki_page, tags_dbpedia = dbpedia(title, wiki_page)  # 3 secs
 
     if wiki_page and browser:

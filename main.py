@@ -28,10 +28,68 @@ with open("genres.txt", "r") as f:
     GENRES = f.read().splitlines()
 
 
+class Settings(Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.transient(parent)
+        self.title("Settings")
+        self.parent = parent
+        self.result = None
+
+        body = ttk.Frame(self)
+        body.pack(padx=5, pady=5)
+
+        self.browser = IntVar()
+        self.browser.set(int(parent.browser))
+        c = ttk.Checkbutton(body, text="Open in browser", variable=self.browser)
+        c.grid(column=0, row=0, sticky=W)
+        c.focus_set()
+
+        self.buttonbox()
+
+        self.grab_set()
+
+        self.protocol("WM_DELETE_WINDOW", self.cancel)
+
+        self.geometry("+%d+%d" % (parent.winfo_rootx()+50, parent.winfo_rooty()+50))
+
+        self.wait_window(self)
+
+    def buttonbox(self):
+        box = ttk.Frame(self)
+
+        w = ttk.Button(box, text="OK", width=10, command=self.ok, default=ACTIVE)
+        w.pack(side=LEFT, padx=5, pady=5)
+        w = ttk.Button(box, text="Cancel", width=10, command=self.cancel)
+        w.pack(side=LEFT, padx=5, pady=5)
+
+        self.bind("<Return>", self.ok)
+        self.bind("<Escape>", self.cancel)
+
+        box.pack()
+
+    def cancel(self, *_):
+        # put focus back to the parent window
+        self.parent.focus_set()
+        self.destroy()
+
+    def apply(self):
+        self.parent.browser = bool(self.browser.get())
+
+    def ok(self, *_):
+        self.withdraw()
+        self.update_idletasks()
+
+        self.apply()
+
+        self.cancel()
+
+
 class CurrentInfo:
     class CurrentEntry(ttk.Entry):
         def __init__(self, *args, **kwargs):
-            ttk.Entry.__init__(self, *args, **kwargs)
+            super().__init__(*args, **kwargs)
             self.state(["readonly"])
 
     def __init__(self, parent, column):
@@ -69,7 +127,7 @@ class CurrentInfo:
 class NewEntry:
     class NumEntry(ttk.Entry):
         def __init__(self, length, min_val, max_val, *args, **kwargs):
-            ttk.Entry.__init__(self, *args, **kwargs)
+            super().__init__(*args, **kwargs)
             self.length = length
             self.min_val = min_val
             self.max_val = max_val
@@ -124,12 +182,14 @@ class NewEntry:
 
 
 class MenuBar(Menu):
-    def __init__(self, close):
-        super(MenuBar, self).__init__()
+    def __init__(self, root, close):
+        super().__init__()
 
         self.option_add("*tearOff", FALSE)
 
         file_menu = Menu(self)
+        file_menu.add_command(label="Settings",
+                              command=lambda: Settings(root))
         file_menu.add_command(label="Exit", command=close)
 
         help_menu = Menu(self)
@@ -139,22 +199,24 @@ class MenuBar(Menu):
         self.add_cascade(menu=file_menu, label="File")
         self.add_cascade(menu=help_menu, label="Help")
 
+        root.config(menu=self)
+
 
 class Gui(Tk):
     def __init__(self):
-        super(Gui, self).__init__()
+        super().__init__()
 
         self.title("M4a Tagger")
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        menu_bar = MenuBar(self.quit)
-        self.config(menu=menu_bar)
+        MenuBar(self, self.quit)
 
         self.songs = []
         self.total_songs = 0
         self.current_song = MP4()
         self.extra_tags = dict()
+        self.browser = True
 
         mainframe = ttk.Frame(self, padding=(3, 3, 0, 0))
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
@@ -233,18 +295,22 @@ class Gui(Tk):
         button_frame = ttk.Frame(mainframe, padding=(5, 10, 0, 0))
         button_frame.grid(column=2, columnspan=3, row=100, sticky=E)
 
-        ttk.Label(button_frame, textvariable=self.progress).grid(column=0, row=0)
+        self.progress_bar = ttk.Progressbar(button_frame, orient="horizontal", length=50, mode="indeterminate")
+        self.progress_bar.grid(column=0, row=0)
+        self.progress_bar.grid_remove()
+
+        ttk.Label(button_frame, textvariable=self.progress).grid(column=1, row=0)
 
         self.save_button = ttk.Button(button_frame, text="Save", command=self.save)
-        self.save_button.grid(column=1, row=0)
+        self.save_button.grid(column=2, row=0)
         self.save_button.state(["disabled"])
 
         self.next_song_button = ttk.Button(button_frame, text="Next Song", command=self.next_song)
-        self.next_song_button.grid(column=2, row=0)
+        self.next_song_button.grid(column=3, row=0)
         self.next_song_button.state(["disabled"])
 
         self.browse_button = ttk.Button(button_frame, text="Open Folder", command=self.browse)
-        self.browse_button.grid(column=3, row=0)
+        self.browse_button.grid(column=4, row=0)
 
     @staticmethod
     def set_var_list(var_list, tag_list):
@@ -258,8 +324,8 @@ class Gui(Tk):
             else:
                 var.set(tag_list[i])
 
-    def threaded_set_external_tags(self, title, wiki_path):
-        self.load_queue.put(get_external_tags(title=title, wiki_page=wiki_path))
+    def threaded_set_external_tags(self, title, wiki_path, browser):
+        self.load_queue.put(get_external_tags(title=title, wiki_page=wiki_path, browser=browser))
 
     def process_load_queue(self):
         try:
@@ -270,23 +336,26 @@ class Gui(Tk):
             self.set_var_list(self.dbpedia_entry.var_list, external_tags[0])
             self.set_var_list(self.wiki_entry.var_list, external_tags[1])
             self.set_var_list(self.discogs_entry.var_list, external_tags[2])
-            # TODO: stop loading icon
-            print("Finished loading")
+            self.progress_bar.stop()
+            self.progress_bar.grid_remove()
 
-    def set_external_tags(self, title="", wiki_path=""):
+    def set_external_tags(self, title="", wiki_path="", browser=None):
         # TODO: auto load next song
-        # TODO: start loading icon
-        print("Started loading")
+        self.progress_bar.grid()
+        self.progress_bar.start()
 
+        if browser is None:
+            browser = self.browser
         if wiki_path:
             wiki_path = "http://en.wikipedia.org/wiki/" + wiki_path
 
-        # Downloads tags from Dbpedia, Wikipedia and Discogs
-        threading.Thread(target=self.threaded_set_external_tags, args=(title, wiki_path)).start()
+        # Downloads tags from Dbpedia, Wikipedia and Discogs (takes 11 seconds on average)
+        threading.Thread(target=self.threaded_set_external_tags, args=(title, wiki_path, browser)).start()
 
-        self.after(0, self.process_load_queue())
+        self.process_load_queue()
 
-    def set_vars(self):
+    def set_vars(self, external=True):
+        # TODO: show filename
         def tag_name_value(tag_key):
             tag = self.extra_tags[tag_key]
             if type(tag) is list:
@@ -304,6 +373,8 @@ class Gui(Tk):
             else:
                 return "None"
 
+        self.custom_url.set("")
+
         self.extra_tags = dict(self.current_song.tags)
         song_tags = [self.extra_tags.pop(tag[1], "None")[0] for tag in TAGS]
 
@@ -313,13 +384,14 @@ class Gui(Tk):
 
         self.progress.set(value="Song "+str(self.total_songs-len(self.songs))+" of "+str(self.total_songs))
 
-        self.set_external_tags(title=song_tags[0])
+        if external:
+            self.set_external_tags(title=song_tags[0])
 
     def load_url(self):
         # Bound to custom_url_button
         url = self.custom_url.get()
         if url:
-            self.set_external_tags(wiki_path=url)
+            self.set_external_tags(wiki_path=url, browser=False)
 
     def open_next_song(self):
         while self.songs:
@@ -356,10 +428,11 @@ class Gui(Tk):
 
         self.set_vars()
 
+        self.custom_url_button.state(["!disabled"])
+        self.save_button.state(["!disabled"])
+        self.save_button.config(text="Save")
         if self.songs:
-            self.custom_url_button.state(["!disabled"])
             self.next_song_button.state(["!disabled"])
-            self.save_button.state(["!disabled"])
 
     def save(self):
         # Bound to save_button
@@ -367,9 +440,9 @@ class Gui(Tk):
             for tag in self.extra_tags:
                 del self.current_song[tag]
 
-        if self.entry_select == "Dbpedia:":
+        if self.entry_select.get() == "Dbpedia:":
             var_save = self.dbpedia_entry.var_list
-        elif self.entry_select == "Wikipedia:":
+        elif self.entry_select.get() == "Wikipedia:":
             var_save = self.wiki_entry.var_list
         else:
             var_save = self.discogs_entry.var_list
@@ -386,7 +459,9 @@ class Gui(Tk):
             messagebox.showerror(title="Error", message="Couldn't save tags to file",
                                  detail=repr(e))
         else:
+            self.set_vars(False)
             self.save_button.state(["disabled"])
+            self.save_button.config(text="Saved")
 
     def next_song(self):
         # Bound to next_song_button
@@ -398,6 +473,7 @@ class Gui(Tk):
         if not self.songs:
             self.next_song_button.state(["disabled"])
         self.save_button.state(["!disabled"])
+        self.save_button.config(text="Save")
 
         self.set_vars()
 
