@@ -215,6 +215,7 @@ class Gui(Tk):
         self.songs = []
         self.total_songs = 0
         self.current_song = MP4()
+        self.current_song_file_name = StringVar("")
         self.extra_tags = dict()
         self.browser = True
 
@@ -223,10 +224,11 @@ class Gui(Tk):
         # Clears focus from text boxes on click
         mainframe.bind("<1>", lambda event: mainframe.focus_set())
 
+        self.entry_select = StringVar(value="Dbpedia:")
         self.init_columns(mainframe)
 
         self.extra_tags_var = StringVar()
-        self.init_extra(mainframe, 8)
+        self.init_extra(mainframe, 9)
 
         self.custom_url = StringVar()
         self.init_custom_url(mainframe, 8)
@@ -251,9 +253,6 @@ class Gui(Tk):
         self.current_info = CurrentInfo(mainframe, 1)
         mainframe.columnconfigure(1, weight=1, uniform="a")
 
-        ttk.Label(mainframe, text="Select tag source:").grid(column=1, row=7, sticky=E)
-        self.entry_select = StringVar(value="Dbpedia:")
-
         self.dbpedia_entry = NewEntry(mainframe, 2, self.entry_select, "Dbpedia:")
         self.dbpedia_entry.title.focus()
         mainframe.columnconfigure(2, weight=1, uniform="a")
@@ -263,6 +262,10 @@ class Gui(Tk):
 
         self.discogs_entry = NewEntry(mainframe, 4, self.entry_select, "Discogs:")
         mainframe.columnconfigure(4, weight=1, uniform="a")
+
+        ttk.Label(mainframe, text="Select tag source:").grid(column=1, row=7, sticky=W)
+        ttk.Label(mainframe, textvariable=self.current_song_file_name)\
+            .grid(column=1, columnspan=2, row=8, sticky=W)
 
     def init_extra(self, mainframe, row_num):
         ttk.Label(mainframe, text="The following tags will be removed:") \
@@ -275,7 +278,7 @@ class Gui(Tk):
             .grid(column=0, row=0, sticky=(W, E))
 
     def init_custom_url(self, mainframe, row_num):
-        ttk.Label(mainframe, text="Enter wikipedia url if information is incorrect:") \
+        ttk.Label(mainframe, text="Enter wikipedia url if the sources are incorrect:") \
             .grid(column=3, columnspan=2, row=row_num, sticky=W)
 
         custom_url_frame = ttk.Frame(mainframe)
@@ -355,7 +358,6 @@ class Gui(Tk):
         self.process_load_queue()
 
     def set_vars(self, external=True):
-        # TODO: show filename
         def tag_name_value(tag_key):
             tag = self.extra_tags[tag_key]
             if type(tag) is list:
@@ -396,7 +398,8 @@ class Gui(Tk):
     def open_next_song(self):
         while self.songs:
             try:
-                self.current_song = MP4(self.songs.pop())
+                self.current_song_file_name.set(self.songs.pop())
+                self.current_song = MP4(self.current_song_file_name.get())
             except MP4StreamInfoError as e:
                 print(repr(e))
             else:
