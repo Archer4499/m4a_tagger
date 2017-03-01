@@ -7,6 +7,6 @@ Uses:
 * And the folowing for retrieving new tags:
   * [lxml 3.7.3](http://lxml.de) (pip install lxml)
   * [Discogs client 2.0.2](https://github.com/discogs/discogs_client) (pip install discogs_client)
- * modified version of [Wptools](https://github.com/siznax/wptools)
+  * modified version of [Wptools](https://github.com/siznax/wptools), [html5lib](https://github.com/html5lib/html5lib-python) (pip install html5lib) is needed for Wptools.
 
 This project is licensed under the terms of the MIT license.
