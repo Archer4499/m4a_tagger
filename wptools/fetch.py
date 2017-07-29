@@ -14,39 +14,15 @@ from string import Template
 
 class WPToolsFetch:
 
-    ENDPOINT = "http://en.wikipedia.org"
-    ACTION_QUERY = Template(("${API}/w/api.php?action=query"
-                             "&titles=${titles}"
-                             "&format=json"
-                             "&formatversion=2"
-                             "&prop=revisions"  # latest revision
-                             "&rvprop=content"  # content of latest revision
-                             "&redirects"
-                             "&continue="))
-    QUERY = {"html": Template(("${WIKI}/w/api.php?action=parse"
-                               "&format=json"
-                               "&page=${page}"
-                               "&prop=text"
-                               "&contentmodel=text"
-                               "&disablelimitreport="
-                               "&disableeditsection="
-                               "&disabletoc=")),
-             "parsetree": Template(("${WIKI}/w/api.php?action=parse"
-                                    "&format=json"
-                                    "&page=${page}"
-                                    "&prop=parsetree"
-                                    "&disablelimitreport="
-                                    "&disableeditsection="
-                                    "&disabletoc="
-                                    "&contentmodel=text")),
-             "wikitext": Template(("${WIKI}/w/api.php?action=parse"
-                                   "&format=json"
-                                   "&page=${page}"
-                                   "&prop=wikitext"
-                                   "&contentmodel=wikitext"
-                                   "&disablelimitreport="
-                                   "&disableeditsection="
-                                   "&disabletoc="))}
+    ENDPOINT = "https://en.wikipedia.org"
+    QUERY = Template(("${WIKI}/w/api.php?action=parse"
+                      "&format=json"
+                      "&page=${page}"
+                      "&prop=parsetree"
+                      "&disablelimitreport="
+                      "&disableeditsection="
+                      "&disabletoc="
+                      "&contentmodel=text"))
     RETRY_SLEEP = 2
     RETRY_MAX = 3
     TIMEOUT = 30
@@ -63,6 +39,13 @@ class WPToolsFetch:
         self.cobj.close()
         if self.verbose:
             print("connection closed.", file=sys.stderr)
+
+    def curl_setup(self):
+        crl = pycurl.Curl()
+        crl.setopt(crl.USERAGENT, self.user_agent)
+        crl.setopt(crl.FOLLOWLOCATION, True)
+        crl.setopt(crl.CONNECTTIMEOUT, self.TIMEOUT)
+        return crl
 
     def curl(self, url):
         """speed"""
@@ -109,27 +92,16 @@ class WPToolsFetch:
             print("    {0}: {1}".format(key, out[key]), file=sys.stderr)
         print(file=sys.stderr)
 
-    def curl_setup(self):
-        crl = pycurl.Curl()
-        # crl.setopt(crl.URL, wiki)
-        crl.setopt(crl.USERAGENT, self.user_agent)
-        crl.setopt(crl.FOLLOWLOCATION, True)
-        crl.setopt(crl.CONNECTTIMEOUT, self.TIMEOUT)
-        return crl
-
-    def html(self, title):
-        """get HTML keeping connection open"""
-        return self.curl(self.query('html', title))
-
-    def query(self, content, page):
+    def query(self, page):
         self.title = page
         page = page.replace(" ", "+")
         page = page[0].upper() + page[1:]
-        qry = self.QUERY[content].substitute(WIKI=self.wiki, page=page)
+        qry = self.QUERY.substitute(WIKI=self.wiki, page=page)
         if self.lead:
             return qry + "&section=0"
         return qry
 
+    #TODO: not used (uses requests lib instead of pycURL)
     def request(self, url, hdr, output):
         print("GET {0}\nHDR {1}\nOUT {2}".format(url, hdr, output), file=sys.stderr)
         r = requests.get(url, headers=hdr, timeout=self.TIMEOUT)
@@ -142,30 +114,9 @@ class WPToolsFetch:
         return "{0}/{1} (+{2})".format(__title__, __version__, __contact__)
 
 
-def get_html(title, lead=False, test=False, wiki=WPToolsFetch.ENDPOINT,
-             verbose=False):
+def get_parsetree(title, lead=False, test=False, wiki=None, verbose=False):
     obj = WPToolsFetch(wiki, lead, verbose)
-    qry = obj.query('html', title)
+    qry = obj.query(title)
     if test:
         return qry
     return obj.curl(qry)
-
-
-def get_infobox():
-    pass
-
-
-def get_parsetree(title, lead, test, wiki, verbose=False):
-    obj = WPToolsFetch(wiki, lead, verbose)
-    qry = obj.query('parsetree', title)
-    if test:
-        return qry
-    return obj.curl(qry)
-
-
-def get_wikitext(title, lead, test, wiki, verbose=False):
-    obj = WPToolsFetch(wiki, lead, verbose)
-    url = obj.query('wikitext', title)
-    if test:
-        return url
-    return obj.curl(url)
