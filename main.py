@@ -202,15 +202,10 @@ class MenuBar(Menu):
         root.config(menu=self)
 
 
+# noinspection PyAttributeOutsideInit
 class Gui(Tk):
     def __init__(self):
         super().__init__()
-
-        self.title("M4a Tagger")
-        self.columnconfigure(0, weight=1)
-        self.rowconfigure(0, weight=1)
-
-        MenuBar(self, self.quit)
 
         self.songs = []
         self.total_songs = 0
@@ -218,10 +213,18 @@ class Gui(Tk):
         self.current_song_file_name = StringVar("")
         self.extra_tags = dict()
         self.browser = True
+        self.load_queue = queue.Queue()
+        self.custom_queue = queue.Queue()
+
+        self.title("M4a Tagger")
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        MenuBar(self, self.quit)
 
         mainframe = ttk.Frame(self, padding=(3, 3, 0, 0))
         mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-        # Clears focus from text boxes on click
+        # Clear focus from text boxes on click
         mainframe.bind("<1>", lambda event: mainframe.focus_set())
 
         self.entry_select = StringVar(value="Dbpedia:")
@@ -243,8 +246,6 @@ class Gui(Tk):
 
         ttk.Sizegrip(self).grid(column=999, row=999, sticky=(S, E))
 
-        self.load_queue = queue.Queue()
-
     def init_columns(self, mainframe):
         # Row Labels
         for i, item in enumerate(TAGS):
@@ -264,6 +265,7 @@ class Gui(Tk):
         mainframe.columnconfigure(4, weight=1, uniform="a")
 
         ttk.Label(mainframe, text="Select tag source:").grid(column=1, row=7, sticky=W)
+
         ttk.Label(mainframe, textvariable=self.current_song_file_name)\
             .grid(column=1, columnspan=2, row=8, sticky=W)
 
@@ -290,7 +292,7 @@ class Gui(Tk):
         custom_url_entry = ttk.Entry(custom_url_frame, textvariable=self.custom_url)
         custom_url_entry.grid(column=1, row=0, sticky=W)
 
-        self.custom_url_button = ttk.Button(custom_url_frame, text="Load Info", command=self.load_url)
+        self.custom_url_button = ttk.Button(custom_url_frame, text="Load URL", command=self.load_url)
         self.custom_url_button.grid(column=2, row=0)
         self.custom_url_button.state(["disabled"])
 
@@ -327,8 +329,8 @@ class Gui(Tk):
             else:
                 var.set(tag_list[i])
 
-    def threaded_set_external_tags(self, title, wiki_path, browser):
-        self.load_queue.put(get_external_tags(title=title, wiki_page=wiki_path, browser=browser))
+    def threaded_set_external_tags(self, title):
+        self.load_queue.put(get_external_tags(title=title, browser=self.browser))
 
     def process_load_queue(self):
         try:
@@ -342,20 +344,42 @@ class Gui(Tk):
             self.progress_bar.stop()
             self.progress_bar.grid_remove()
 
-    def set_external_tags(self, title="", wiki_path="", browser=None):
+    def set_external_tags(self, title):
         # TODO: auto load next song
         self.progress_bar.grid()
         self.progress_bar.start()
 
-        if browser is None:
-            browser = self.browser
-        if wiki_path:
-            wiki_path = "http://en.wikipedia.org/wiki/" + wiki_path
-
         # Downloads tags from Dbpedia, Wikipedia and Discogs (takes 11 seconds on average)
-        threading.Thread(target=self.threaded_set_external_tags, args=(title, wiki_path, browser)).start()
+        # TODO: Handle error messages better
+        threading.Thread(target=self.threaded_set_external_tags, args=(title,)).start()
 
         self.process_load_queue()
+
+    def threaded_correct_external_tags(self, wiki_path):
+        self.custom_queue.put(get_external_tags(wiki_page=wiki_path, browser=False))
+
+    def process_custom_queue(self):
+        try:
+            external_tags = self.custom_queue.get_nowait()
+        except queue.Empty:
+            self.after(100, self.process_custom_queue)
+        else:
+            self.set_var_list(self.dbpedia_entry.var_list, external_tags[0])
+            self.set_var_list(self.wiki_entry.var_list, external_tags[1])
+            self.set_var_list(self.discogs_entry.var_list, external_tags[2])
+            self.progress_bar.stop()
+            self.progress_bar.grid_remove()
+
+    def correct_external_tags(self, wiki_path):
+        self.progress_bar.grid()
+        self.progress_bar.start()
+
+        wiki_path = "http://en.wikipedia.org/wiki/" + wiki_path
+
+        # Downloads tags from Dbpedia, Wikipedia and Discogs (takes 11 seconds on average)
+        threading.Thread(target=self.threaded_correct_external_tags, args=(wiki_path,)).start()
+
+        self.process_custom_queue()
 
     def set_vars(self, external=True):
         def tag_name_value(tag_key):
@@ -387,13 +411,13 @@ class Gui(Tk):
         self.progress.set(value="Song "+str(self.total_songs-len(self.songs))+" of "+str(self.total_songs))
 
         if external:
-            self.set_external_tags(title=song_tags[0])
+            self.set_external_tags(song_tags[0])
 
     def load_url(self):
         # Bound to custom_url_button
         url = self.custom_url.get()
         if url:
-            self.set_external_tags(wiki_path=url, browser=False)
+            self.correct_external_tags(url)
 
     def open_next_song(self):
         while self.songs:
