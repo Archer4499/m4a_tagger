@@ -7,8 +7,7 @@ Libraries used:
 * And the folowing for retrieving new tags:
   * [lxml 3.7.3](http://lxml.de) (pip install lxml)
   * [Discogs client 2.0.2](https://github.com/discogs/discogs_client) (pip install discogs_client)
-  * modified version of [Wptools](https://github.com/siznax/wptools) (included), the following are needed for wptools:
-    * [html5lib](https://github.com/html5lib/html5lib-python) (pip install html5lib)
+  * modified version of [Wptools](https://github.com/siznax/wptools) (included), pycurl is needed for wptools:
     * [pycurl](https://pycurl.io) (pip install pycurl)
 
 Install:  
@@ -19,7 +18,6 @@ Install:
     pip install mutagen
     pip install lxml
     pip install discogs_client
-    pip install html5lib
     pip install pycurl
     ````
 
